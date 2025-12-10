@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>偶像梦幻祭抽卡模拟器</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 主界面 -->
+        <div id="main-screen" class="screen active">
+            <header class="header">
+                <h1><i class="fas fa-star"></i> 偶像梦幻祭抽卡模拟器</h1>
+                <div class="current-up">
+                    <span>当期UP:</span>
+                    <span id="current-up-names"></span>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span>总抽取:</span>
+                        <span id="total-pulls">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>距上次6星:</span>
+                        <span id="since-6star">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>距90抽保底:</span>
+                        <span id="to-pity">90</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="main-content">
+                <div class="info-section">
+                    <h2><i class="fas fa-info-circle"></i> 概率说明</h2>
+                    <div class="rates">
+                        <div class="rate-item rarity-6">
+                            <span>6星角色: 2%</span>
+                            <small>(当期UP占60%)</small>
+                        </div>
+                        <div class="rate-item rarity-5">
+                            <span>5星角色: 12%</span>
+                        </div>
+                        <div class="rate-item rarity-4">
+                            <span>4星角色: 30%</span>
+                        </div>
+                        <div class="rate-item rarity-3">
+                            <span>3星道具: 56%</span>
+                        </div>
+                    </div>
+
+                    <h2><i class="fas fa-gavel"></i> 保底机制</h2>
+                    <div class="pity-mechanisms">
+                        <div class="pity-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>十连保底: 至少1个5星以上角色</span>
+                        </div>
+                        <div class="pity-item">
+                            <i class="fas fa-gem"></i>
+                            <span>90抽保底: 从上一次6星开始计算</span>
+                        </div>
+                        <div class="pity-item">
+                            <i class="fas fa-star"></i>
+                            <span>当期UP保底: 若上一次6星不是当期UP，下一次6星必定是当期UP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="single-pull-btn" class="btn btn-primary">
+                        <i class="fas fa-gem"></i> 单次抽取
+                    </button>
+                    <button id="ten-pull-btn" class="btn btn-primary">
+                        <i class="fas fa-layer-group"></i> 十连抽取
+                    </button>
+                    <button id="stats-btn" class="btn btn-secondary">
+                        <i class="fas fa-chart-bar"></i> 查看统计
+                    </button>
+                    <button id="history-btn" class="btn btn-secondary">
+                        <i class="fas fa-history"></i> 查看历史
+                    </button>
+                    <button id="pool-btn" class="btn btn-secondary">
+                        <i class="fas fa-list"></i> 卡池信息
+                    </button>
+                    <button id="reset-btn" class="btn btn-danger">
+                        <i class="fas fa-redo"></i> 重新开始
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 抽卡动画屏幕 -->
+        <div id="gacha-screen" class="screen">
+            <div class="gacha-container">
+                <div class="card-display-area">
+                    <div class="card-back" id="current-card">
+                        <div class="card-inner">
+                            <div class="question-marks">
+                                <div>?</div>
+                                <div>?</div>
+                                <div>?</div>
+                                <div>?</div>
+                                <div>?</div>
+                                <div>?</div>
+                            </div>
+                            <div class="card-text">点击抽取</div>
+                        </div>
+                    </div>
+                    <div class="pull-info">
+                        <div id="pull-count">第 1 抽</div>
+                        <div id="pull-progress"></div>
+                    </div>
+                </div>
+                <button id="reveal-btn" class="btn btn-primary">
+                    <i class="fas fa-eye"></i> 揭晓卡牌
+                </button>
+                <button id="skip-animation" class="btn btn-secondary">
+                    <i class="fas fa-forward"></i> 跳过动画
+                </button>
+            </div>
+        </div>
+
+        <!-- 6星特效屏幕 -->
+        <div id="six-star-effect" class="screen">
+            <div class="effect-container">
+                <div class="ensemble-star">
+                    <div class="star-text">Ensemble Star！</div>
+                    <div class="sub-text">传说级角色降临！</div>
+                    <div class="stars-animation">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <button id="next-dialogue" class="btn btn-primary">
+                    <i class="fas fa-comment"></i> 查看角色台词
+                </button>
+            </div>
+        </div>
+
+        <!-- 角色台词屏幕 -->
+        <div id="dialogue-screen" class="screen">
+            <div class="dialogue-container">
+                <div class="character-name" id="dialogue-character"></div>
+                <div class="dialogue-text" id="dialogue-text"></div>
+                <div class="dialogue-hint">点击继续</div>
+                <button id="next-result" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> 查看角色信息
+                </button>
+            </div>
+        </div>
+
+        <!-- 结果屏幕 -->
+        <div id="result-screen" class="screen">
+            <div class="result-container">
+                <div class="result-header">
+                    <div class="pull-number" id="result-pull-number">第 1 次抽取结果</div>
+                    <div class="rarity-display" id="result-rarity"></div>
+                </div>
+                
+                <div class="character-info">
+                    <div class="character-name" id="result-character-name"></div>
+                    <div class="character-featured" id="result-featured"></div>
+                    <div class="character-pity" id="result-pity"></div>
+                </div>
+                
+                <div class="counters">
+                    <div class="counter-item">
+                        <span>距下次6星:</span>
+                        <span id="result-next-6star">0抽</span>
+                    </div>
+                    <div class="counter-item">
+                        <span>距下次当期UP:</span>
+                        <span id="result-next-featured">0抽</span>
+                    </div>
+                </div>
+                
+                <button id="result-continue" class="btn btn-primary">
+                    <i class="fas fa-check"></i> 继续
+                </button>
+            </div>
+        </div>
+
+        <!-- 十连总结屏幕 -->
+        <div id="ten-summary-screen" class="screen">
+            <div class="summary-container">
+                <div class="summary-header">
+                    <h2>十连抽取总结</h2>
+                    <div class="summary-stats" id="summary-stats"></div>
+                </div>
+                
+                <div class="summary-results" id="summary-results"></div>
+                
+                <div class="summary-counters">
+                    <div class="counter-item">
+                        <span>总抽取次数:</span>
+                        <span id="summary-total-pulls">0</span>
+                    </div>
+                    <div class="counter-item">
+                        <span>距下次6星:</span>
+                        <span id="summary-next-6star">0抽</span>
+                    </div>
+                </div>
+                
+                <button id="summary-continue" class="btn btn-primary">
+                    <i class="fas fa-home"></i> 返回主界面
+                </button>
+            </div>
+        </div>
+
+        <!-- 统计屏幕 -->
+        <div id="stats-screen" class="screen">
+            <div class="stats-container">
+                <h2><i class="fas fa-chart-bar"></i> 抽卡统计</h2>
+                
+                <div class="stats-overview">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stats-total-pulls">0</div>
+                        <div class="stat-label">总抽取次数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stats-since-6star">0</div>
+                        <div class="stat-label">距上次6星</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stats-to-pity">90</div>
+                        <div class="stat-label">距90抽保底</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stats-6star-count">0</div>
+                        <div class="stat-label">6星总数</div>
+                    </div>
+                </div>
+                
+                <div class="inventory-section">
+                    <h3>库存统计</h3>
+                    <div class="inventory-categories">
+                        <div class="inventory-category rarity-6">
+                            <h4>6星角色 <span id="inventory-6star-count">0个</span></h4>
+                            <div class="inventory-items" id="inventory-6star"></div>
+                        </div>
+                        <div class="inventory-category rarity-5">
+                            <h4>5星角色 <span id="inventory-5star-count">0个</span></h4>
+                            <div class="inventory-items" id="inventory-5star"></div>
+                        </div>
+                        <div class="inventory-category rarity-4">
+                            <h4>4星角色 <span id="inventory-4star-count">0个</span></h4>
+                            <div class="inventory-items" id="inventory-4star"></div>
+                        </div>
+                        <div class="inventory-category rarity-3">
+                            <h4>3星道具 <span id="inventory-3star-count">0个</span></h4>
+                            <div class="inventory-items" id="inventory-3star"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="back-to-main" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> 返回主界面
+                </button>
+            </div>
+        </div>
+
+        <!-- 历史记录屏幕 -->
+        <div id="history-screen" class="screen">
+            <div class="history-container">
+                <h2><i class="fas fa-history"></i> 抽卡历史记录</h2>
+                
+                <div class="history-controls">
+                    <select id="history-filter">
+                        <option value="all">全部记录</option>
+                        <option value="6star">仅6星</option>
+                        <option value="5star">仅5星</option>
+                        <option value="featured">仅当期UP</option>
+                    </select>
+                    <input type="number" id="history-count" min="10" max="100" value="20" placeholder="显示条数">
+                </div>
+                
+                <div class="history-list" id="history-list"></div>
+                
+                <button id="history-back" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> 返回主界面
+                </button>
+            </div>
+        </div>
+
+        <!-- 卡池信息屏幕 -->
+        <div id="pool-screen" class="screen">
+            <div class="pool-container">
+                <h2><i class="fas fa-list"></i> 卡池信息</h2>
+                
+                <div class="current-up-info">
+                    <h3>当期UP角色</h3>
+                    <div class="featured-characters" id="pool-featured"></div>
+                </div>
+                
+                <div class="pool-categories">
+                    <div class="pool-category rarity-6">
+                        <h3>6星角色</h3>
+                        <div class="pool-characters" id="pool-6star"></div>
+                    </div>
+                    <div class="pool-category rarity-5">
+                        <h3>5星角色</h3>
+                        <div class="pool-characters" id="pool-5star"></div>
+                    </div>
+                    <div class="pool-category rarity-4">
+                        <h3>4星角色</h3>
+                        <div class="pool-characters" id="pool-4star"></div>
+                    </div>
+                    <div class="pool-category rarity-3">
+                        <h3>3星道具</h3>
+                        <div class="pool-items" id="pool-3star"></div>
+                    </div>
+                </div>
+                
+                <div class="pool-rates">
+                    <h3>概率分布</h3>
+                    <div class="rate-list">
+                        <div class="rate-item rarity-6">6星角色: 2% (当期UP占60%)</div>
+                        <div class="rate-item rarity-5">5星角色: 12%</div>
+                        <div class="rate-item rarity-4">4星角色: 30%</div>
+                        <div class="rate-item rarity-3">3星道具: 56%</div>
+                    </div>
+                </div>
+                
+                <button id="pool-back" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> 返回主界面
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title"></h3>
+            <p id="modal-message"></p>
+            <div class="modal-buttons">
+                <button id="modal-confirm" class="btn btn-primary">确认</button>
+                <button id="modal-cancel" class="btn btn-secondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
